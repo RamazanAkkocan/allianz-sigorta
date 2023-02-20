@@ -104,6 +104,10 @@ public class CampaignServiceImpl implements CampaignService {
         return mapper.map(repository.save(entity), CampaignDTO.class);
     }
 
+    /**
+     * Kayıtlı tüm kampanyaların toplamda hangi durumlarda olduğunu istatistiksel olarak döner.
+     * @return CampaignResponseDTO
+     */
     @Override
     @Transactional(readOnly = true)
     public List<CampaignResponseDTO> getStatistics() {

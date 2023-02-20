@@ -41,7 +41,7 @@ public class CampaignController {
         return ResponseEntity.ok(service.reject(id));
     }
 
-    @GetMapping("/campany/statistics")
+    @GetMapping("/dashboard/classifieds/statistics")
     public ResponseEntity<List<CampaignResponseDTO>> getStatistics() {
         return ResponseEntity.ok(service.getStatistics());
     }
