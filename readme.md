@@ -1,3 +1,3 @@
 #Benim projem
 
-Deneme
+Deneme qweqweqweqweqweqwe
