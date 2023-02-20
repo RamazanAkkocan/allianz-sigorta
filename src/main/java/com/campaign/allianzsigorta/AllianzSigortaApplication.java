@@ -9,5 +9,4 @@ public class AllianzSigortaApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AllianzSigortaApplication.class, args);
 	}
-
 }

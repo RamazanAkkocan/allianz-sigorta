@@ -41,9 +41,7 @@ class CampaignServiceImplTest {
 
     CampaignEntity response;
 
-
     CampaignDTO dto;
-
 
     @BeforeEach
     void setUp() {
@@ -59,7 +57,6 @@ class CampaignServiceImplTest {
         Mockito.when(mapper.map(response, CampaignDTO.class)).thenReturn(responseDTO);
 
         CampaignDTO response = service.findById(1L);
-
         assertNotNull(response);
     }
 
@@ -73,8 +70,8 @@ class CampaignServiceImplTest {
         Mockito.when(repository.save(request)).thenReturn(response);
         Mockito.when(mapper.map(dto, CampaignEntity.class)).thenReturn(request);
         Mockito.when(mapper.map(response, CampaignDTO.class)).thenReturn(responseDTO);
-        CampaignDTO response = service.save(dto);
 
+        CampaignDTO response = service.save(dto);
         assertNotNull(response);
     }
 
@@ -90,7 +87,6 @@ class CampaignServiceImplTest {
         Mockito.when(mapper.map(response, CampaignDTO.class)).thenReturn(responseDTO);
 
         CampaignDTO response = service.confirmation(1L);
-
         assertNotNull(response);
     }
 
@@ -107,7 +103,6 @@ class CampaignServiceImplTest {
         Mockito.when(mapper.map(response, CampaignDTO.class)).thenReturn(responseDTO);
 
         CampaignDTO response = service.reject(1L);
-
         assertNotNull(response);
     }
 
@@ -118,11 +113,9 @@ class CampaignServiceImplTest {
         dto.setTotal(2);
         List<CampaignResponseDTO> responseList = new ArrayList<>();
         responseList.add(dto);
-
         Mockito.when(customRepository.getList()).thenReturn(responseList);
 
         responseList = service.getStatistics();
-
         assertNotNull(responseList);
     }
 
