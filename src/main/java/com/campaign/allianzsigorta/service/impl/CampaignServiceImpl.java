@@ -4,6 +4,7 @@ import com.campaign.allianzsigorta.enumerated.CampaignCategoryEnum;
 import com.campaign.allianzsigorta.enumerated.StatusEnum;
 import com.campaign.allianzsigorta.exception.NoDataFoundException;
 import com.campaign.allianzsigorta.model.dto.CampaignDTO;
+import com.campaign.allianzsigorta.model.dto.CampaignResponseDTO;
 import com.campaign.allianzsigorta.model.entity.CampaignEntity;
 import com.campaign.allianzsigorta.repository.CampaignCustomRepository;
 import com.campaign.allianzsigorta.repository.CampaignRepository;
@@ -11,8 +12,9 @@ import com.campaign.allianzsigorta.service.CampaignService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author r.akkocan
@@ -35,11 +37,8 @@ public class CampaignServiceImpl implements CampaignService {
      * @return CampanyDTO
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    @Transactional(readOnly = true)
     public CampaignDTO findById(Long id) {
-
-        customRepository.getList();
-
         CampaignEntity entity = repository.findById(id).orElseThrow(() -> new NoDataFoundException("Kayıt Bulunamadı"));
         return mapper.map(entity, CampaignDTO.class);
     }
@@ -51,7 +50,7 @@ public class CampaignServiceImpl implements CampaignService {
      * @return CampanyDTO
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public CampaignDTO save(CampaignDTO dto) {
 
         if (dto.getCampaignCategory().equals(CampaignCategoryEnum.HY)) {
@@ -74,7 +73,7 @@ public class CampaignServiceImpl implements CampaignService {
      * @return CampaignDTO
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public CampaignDTO confirmation(Long id) {
         CampaignEntity entity = repository.findById(id).orElseThrow(() -> new NoDataFoundException("Kayıt Bulunamadı"));
         if (!entity.getStatus().equals(StatusEnum.BEKLEMEDE)) {
@@ -93,7 +92,7 @@ public class CampaignServiceImpl implements CampaignService {
      * @return CampaignDTO
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional
     public CampaignDTO reject(Long id) {
         CampaignEntity entity = repository.findById(id).orElseThrow(() -> new NoDataFoundException("Kayıt Bulunamadı"));
         if (!entity.getStatus().equals(StatusEnum.AKTIF) && !entity.getStatus().equals(StatusEnum.BEKLEMEDE)) {
@@ -103,5 +102,11 @@ public class CampaignServiceImpl implements CampaignService {
         entity.setStatus(StatusEnum.DEAKTIF);
 
         return mapper.map(repository.save(entity), CampaignDTO.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CampaignResponseDTO> getStatistics() {
+        return customRepository.getList();
     }
 }

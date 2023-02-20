@@ -1,10 +1,13 @@
 package com.campaign.allianzsigorta.controller;
 
 import com.campaign.allianzsigorta.model.dto.CampaignDTO;
+import com.campaign.allianzsigorta.model.dto.CampaignResponseDTO;
 import com.campaign.allianzsigorta.service.CampaignService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author ramazan akkocan
@@ -36,6 +39,11 @@ public class CampaignController {
     @PutMapping("/campany/reject/{id}")
     public ResponseEntity<CampaignDTO> reject(@PathVariable("id") Long id) {
         return ResponseEntity.ok(service.reject(id));
+    }
+
+    @GetMapping("/campany/statistics")
+    public ResponseEntity<List<CampaignResponseDTO>> getStatistics() {
+        return ResponseEntity.ok(service.getStatistics());
     }
 
 }
