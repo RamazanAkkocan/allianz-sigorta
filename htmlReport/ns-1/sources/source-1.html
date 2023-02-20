@@ -1,0 +1,210 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CampaignServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.campaign.allianzsigorta.service.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: CampaignServiceImpl (com.campaign.allianzsigorta.service.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CampaignServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    31,8%
+  </span>
+  <span class="absValue">
+    (7/22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.campaign.allianzsigorta.service.impl;
+&nbsp;
+&nbsp;import com.campaign.allianzsigorta.enumerated.CampaignCategoryEnum;
+&nbsp;import com.campaign.allianzsigorta.enumerated.StatusEnum;
+&nbsp;import com.campaign.allianzsigorta.exception.NoDataFoundException;
+&nbsp;import com.campaign.allianzsigorta.model.dto.CampaignDTO;
+&nbsp;import com.campaign.allianzsigorta.model.entity.CampaignEntity;
+&nbsp;import com.campaign.allianzsigorta.repository.CampaignCustomRepository;
+&nbsp;import com.campaign.allianzsigorta.repository.CampaignRepository;
+&nbsp;import com.campaign.allianzsigorta.service.CampaignService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.modelmapper.ModelMapper;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Propagation;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;/**
+&nbsp; * @author r.akkocan
+&nbsp; */
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class CampaignServiceImpl implements CampaignService {
+&nbsp;
+&nbsp;    private final CampaignRepository repository;
+&nbsp;
+&nbsp;    private final ModelMapper mapper;
+&nbsp;
+&nbsp;    private final CampaignCustomRepository customRepository;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Id&#39;ye göre Kampaynya Bilgisini Döndürür.
+&nbsp;     *
+&nbsp;     * @param id Long
+&nbsp;     * @return CampanyDTO
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+&nbsp;    public CampaignDTO findById(Long id) {
+&nbsp;
+<b class="nc">&nbsp;        customRepository.getList();</b>
+&nbsp;
+<b class="nc">&nbsp;        CampaignEntity entity = repository.findById(id).orElseThrow(() -&gt; new NoDataFoundException(&quot;Kayýt Bulunamadý&quot;));</b>
+<b class="nc">&nbsp;        return mapper.map(entity, CampaignDTO.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Kampanya Bilgisini Kayýt eder.
+&nbsp;     *
+&nbsp;     * @param dto CampanyDTO
+&nbsp;     * @return CampanyDTO
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    @Transactional(propagation = Propagation.REQUIRED)
+&nbsp;    public CampaignDTO save(CampaignDTO dto) {
+&nbsp;
+<b class="fc">&nbsp;        if (dto.getCampaignCategory().equals(CampaignCategoryEnum.HY)) {</b>
+<b class="nc">&nbsp;            dto.setStatus(StatusEnum.AKTIF);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            dto.setStatus(StatusEnum.BEKLEMEDE);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        boolean hasSameCamping = repository.existsByCampaignCategoryAndAdvertTitleAndDetailDescription(dto.getCampaignCategory(), dto.getAdvertTitle(), dto.getDetailDescription());</b>
+<b class="fc">&nbsp;        if (hasSameCamping) {</b>
+<b class="nc">&nbsp;            dto.setStatus(StatusEnum.MUKERRER);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        CampaignEntity entity = repository.save(mapper.map(dto, CampaignEntity.class));</b>
+<b class="fc">&nbsp;        return mapper.map(entity, CampaignDTO.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ýlgili Kaydýn Onaylanma Ýþlemini Yapar.
+&nbsp;     *
+&nbsp;     * @param id Long Onaylanacak Kaydýn Primary Keyi
+&nbsp;     * @return CampaignDTO
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    @Transactional(propagation = Propagation.REQUIRED)
+&nbsp;    public CampaignDTO confirmation(Long id) {
+<b class="nc">&nbsp;        CampaignEntity entity = repository.findById(id).orElseThrow(() -&gt; new NoDataFoundException(&quot;Kayýt Bulunamadý&quot;));</b>
+<b class="nc">&nbsp;        if (!entity.getStatus().equals(StatusEnum.BEKLEMEDE)) {</b>
+<b class="nc">&nbsp;            throw new NoDataFoundException(&quot;Bu Kaydýn Statusu &quot; + entity.getStatus().getLabel() + &quot; Olduðundan Onaylanamaz!&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        entity.setStatus(StatusEnum.AKTIF);</b>
+&nbsp;
+<b class="nc">&nbsp;        return mapper.map(repository.save(entity), CampaignDTO.class);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ýlgili Kaydýn Reddetme Ýþlemini Yapar.
+&nbsp;     *
+&nbsp;     * @param id Long Onaylanacak Kaydýn Primary Keyi
+&nbsp;     * @return CampaignDTO
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    @Transactional(propagation = Propagation.REQUIRED)
+&nbsp;    public CampaignDTO reject(Long id) {
+<b class="nc">&nbsp;        CampaignEntity entity = repository.findById(id).orElseThrow(() -&gt; new NoDataFoundException(&quot;Kayýt Bulunamadý&quot;));</b>
+<b class="nc">&nbsp;        if (!entity.getStatus().equals(StatusEnum.AKTIF) &amp;&amp; !entity.getStatus().equals(StatusEnum.BEKLEMEDE)) {</b>
+<b class="nc">&nbsp;            throw new NoDataFoundException(&quot;Bu Kaydýn Statusu &quot; + entity.getStatus().getLabel() + &quot; Olduðundan Reddedilemez!&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        entity.setStatus(StatusEnum.DEAKTIF);</b>
+&nbsp;
+<b class="nc">&nbsp;        return mapper.map(repository.save(entity), CampaignDTO.class);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-02-20 22:35</div>
+</div>
+</body>
+</html>
